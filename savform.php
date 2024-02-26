@@ -32,20 +32,43 @@ class SavForm extends Module
         return $this->display(__FILE__, 'views/templates/front/mysavform.tpl');
     }
 
+    public function hookDisplayHeader($params)
+    {
+        $this->context->controller->addCSS($this->_path.'views/css/savform.css', 'all');
+    }
+
+    public function hookDisplayHeader($params)
+    {
+        $this->context->controller->addJS($this->_path.'views/js/savform.js');
+    }
+
+
 
     public function install()
     {
-        if (!parent::install() || !$this->registerHook('displayCustomerAccount')) {
+        if (!parent::install() || !$this->registerHook('displayCustomerAccount') || !$this->createSavRequestsTable()) {
             return false;
         }
         return true;
     }
+    
+    private function createSavRequestsTable()
+    {
+        $sql = file_get_contents(dirname(__FILE__).'/sql/install.sql');
+        $sql = str_replace('PREFIX_', _DB_PREFIX_, $sql);
+        return Db::getInstance()->execute($sql);
+    }
+    
 
     public function uninstall()
     {
-        if (!parent::uninstall()) {
-            return false;
-        }
-        return true;
+        return parent::uninstall() && $this->deleteSavRequestsTable();
     }
+    
+    private function deleteSavRequestsTable()
+    {
+        $sql = "DROP TABLE IF EXISTS `"._DB_PREFIX_."sav_requests`";
+        return Db::getInstance()->execute($sql);
+    }
+    
 }
