@@ -23,6 +23,16 @@ class SavForm extends Module
         $this->confirmUninstall = $this->l('Êtes-vous sur de vouloir désinstaller ?');
     }
 
+
+    public function hookDisplayCustomerAccount($params)
+    {
+        $this->context->smarty->assign([
+            'action_url' => $this->context->link->getModuleLink('savform', 'SubmitSavForm')
+        ]);
+        return $this->display(__FILE__, 'views/templates/front/mysavform.tpl');
+    }
+
+
     public function install()
     {
         if (!parent::install() || !$this->registerHook('displayCustomerAccount')) {
